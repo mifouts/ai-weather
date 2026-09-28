@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation';
 import { Country, City } from "country-state-city"
 import Select from 'react-select';
@@ -48,6 +48,24 @@ function CityPicker() {
     const [selectedCity, setSelectedCity] = useState<cityOption>(null);
     const router = useRouter();
 
+    // Filtering the full city list is expensive, so only redo it when the country changes
+    const cityOptions = useMemo(
+        () =>
+            selectedCountry
+                ? City.getCitiesOfCountry(selectedCountry.value.isoCode)?.map(city => ({
+                    value: {
+                        latitude: city.latitude!,
+                        longitude: city.longitude!,
+                        countryCode: city.countryCode,
+                        name: city.name,
+                        stateCode: city.stateCode,
+                    },
+                    label: city.name,
+                }))
+                : [],
+        [selectedCountry]
+    );
+
     const handleSelectedCountry = (option: option) => {
         setSelectedCountry(option);
         setSelectedCity(null);
@@ -55,7 +73,9 @@ function CityPicker() {
 
     const handleSelectedCity = (option: cityOption) => {
         setSelectedCity(option);
-        router.push(`/location/${option?.value.name}/${option?.value.latitude}/${option?.value.longitude}`)
+        if (!option) return;
+        const { name, latitude, longitude } = option.value;
+        router.push(`/location/${encodeURIComponent(name)}/${latitude}/${longitude}`)
     }
 
   return (
@@ -66,6 +86,7 @@ function CityPicker() {
             <label htmlFor="country" className='text-white font-bold'>Country</label>
         </div>
         <Select
+        inputId='country'
         className='text-black'
         value={selectedCountry}
         onChange={handleSelectedCountry} 
@@ -80,21 +101,11 @@ function CityPicker() {
                 <label htmlFor="city" className='text-white font-bold'>City</label>
             </div>
             <Select
+            inputId='city'
             className='text-black'
             value={selectedCity}
             onChange={handleSelectedCity} 
-            options={
-                City.getCitiesOfCountry(selectedCountry.value.isoCode)?.map(state => ({
-                    value: {
-                        latitude: state.latitude!,
-                        longitude: state.longitude!,
-                        countryCode: state.countryCode,
-                        name: state.name,
-                        stateCode: state.stateCode,
-                    },
-                    label: state.name,
-                }))
-            } 
+            options={cityOptions} 
             />
             </div>
         )}

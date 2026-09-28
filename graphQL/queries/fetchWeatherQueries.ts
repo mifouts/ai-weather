@@ -3,29 +3,8 @@ import { gql } from "@apollo/client";
 const fetchWeatherQuery = gql`
   query myQuery(
     $current_weather: String
-    $daily: String = "apparent_temperature_max,
-        apparent_temperature_min,
-        sunrise,
-        sunset,
-        temperature_2m_max,
-        temperature_2m_min,
-        time,
-        uv_index_clear_sky_max,
-        uv_index_max,
-        weathercode"
-    $hourly: String = "apparent_temperature,
-        precipitation,
-        precipitation_probability,
-        rain,
-        relativehumidity_2m,
-        showers,
-        snow_depth,
-        snowfall,
-        temperature_2m,
-        time,
-        uv_index,
-        uv_index_clear_sky,
-        windgusts_10m"
+    $daily: String = "apparent_temperature_max,apparent_temperature_min,sunrise,sunset,temperature_2m_max,temperature_2m_min,time,uv_index_clear_sky_max,uv_index_max,weathercode"
+    $hourly: String = "apparent_temperature,precipitation,precipitation_probability,rain,relativehumidity_2m,showers,snow_depth,snowfall,temperature_2m,time,uv_index,uv_index_clear_sky,windgusts_10m"
     $latitude: String
     $longitude: String
     $precipitation_unit: String
